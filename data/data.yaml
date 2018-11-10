@@ -1,0 +1,204 @@
+nouns:
+  paradigms:
+    o-declension:
+      ..[MF]:
+        .S.:
+          N..: ος
+          G..: ου
+          D..: ῳ
+          A..: ον
+          V..: ε
+
+        .D.:
+          "[NAV]..": ω
+          "[GD]..": οιν
+
+        .P.:
+          "[NV]..": οι
+          G..: ων
+          D..: οις
+          A..: ους
+
+      ..N:
+        .S.:
+          N..: ον
+          G..: ου
+          D..: ῳ
+          A..: ον
+          V..: ε
+
+        .D.:
+          "[NAV]..": ω
+          "[GD]..": οιν
+
+        .P.:
+          "[NAV]..": ᾰ
+          G..: ων
+          D..: οις
+
+  lexicon:
+    o-declension:
+      masc:
+        ἄγγελος:
+          genitive: ἀγγέλου
+          meanings: messenger, herald
+          cognates: angel
+
+        ἀδελφός:
+          genitive: ἀδελφοῦ
+          meanings: brother
+          cognates: Philadelphia
+
+        ἄνεμος:
+          genitive: ἀνέμου
+          meanings: wind
+          cognates: anemometer
+
+        ἄνθρωπος:
+          genitive: ἀνθρώπου
+          meanings: human being, man (occasionally fem., "woman")
+          cognates: biology
+
+        βίος:
+          genitive: βίου
+          meanings: life, manner of living, livelihood
+          cognates: biology
+
+        διδάσκαλος:
+          genitive: διδασκάλου
+          meanings: teacher; trainer of a chorus, producer of a play
+          cognates: Didaskalia, didactic
+
+        ἥλιος:
+          genitive: ἥλίου
+          meanings: sun
+          cognates: helium
+
+        θάνατος:
+          genitive: θανάτου
+          meanings: death
+          cognates: euthanasia
+
+        θεός:
+          genitive: θεοῦ
+          meanings: god, divinity (occasionally fem., "goddess")
+          cognates: theology
+
+        ἵππος:
+          genitive: ἵππου
+          meanings: horse (also fem., "mare")
+          cognates: hippopotamus
+
+        λόγος:
+          genitive: λόγου
+          meanings: word, speech, tale, story; reckoning, account, proportion; reason, rationality
+          cognates: philology
+
+        νόμος:
+          genitive: νόμου
+          meanings: custom; law
+          cognates: economic
+
+        οἶκος:
+          genitive: οἶκου
+          meanings: house, dwelling place; household
+          cognates: ecology, economy, ecosystem
+
+        πόλεμος:
+          genitive: πολέμου
+          meanings: war
+          cognates: polemic
+
+        στρατηγός:
+          genitive: στρατηγοῦ
+          meanings: general
+          cognates: strategic
+
+        στρατός:
+          genitive: στρατοῦ
+          meanings: army, host
+          cognates: strategic
+
+        φόβος:
+          genitive: φόβου
+          meanings: fear
+          cognates: phobia, Phobos
+
+      fem:
+        νόσος:
+          genitive: νόσου
+          meanings: sickness, disease
+          cognates: nosology
+
+        ὁδός:
+          genitive: ὁδοῦ
+          meanings: road, path, way; journey
+          cognates: odometer, method
+
+        ψῆφος:
+          genitive: ψήφου
+          meanings: small stone, pebble (used in reckoning, in games, in voting); vote
+          cognates: psephologist
+
+      neut:
+        βιβλίον:
+          genitive: βιβλίου
+          meanings: book
+          cognates: bibliophile
+
+        δῶρον:
+          genitive: δώρου
+          meanings: gift; (in political or judicial contexts) bribe
+          cognates: Eudora
+
+        ἔργον:
+          genitive: ἔργου
+          meanings: work, action, deed
+          cognates: erg, energy
+
+        μέτρον:
+          genitive: μέτρου
+          meanings: measure, size, distance; moderate amount, proportion
+          cognates: meter
+
+        παιδίον:
+          genitive: παιδίου
+          meanings: child
+          cognates: pediatrics
+
+prepositions:
+  ἀπό (ἀπ' or ἀφ' before vowels):
+    meanings:
+      G: away from, from
+    cognates: aphelion, apogee, apocalypse
+
+  ἐκ (ἐξ before vowels):
+    meanings:
+      G: out of, forth from; as a result of
+    cognates: eclectic, ecdysiast
+
+  ἐν:
+    meanings:
+      D: in, within, on, at, among
+    cognates: encaustic, empathy, ellipsis
+
+  εἰς or ἐς:
+    meanings:
+      A: into, to, toward; with respect to
+    cognates: isagogic
+
+  σύν:
+    meanings:
+      D: together with, with
+    cognates: synonym, sympathy
+
+other:
+  ἀλλά:
+    meanings: but, but rather
+
+  καί:
+    meanings: and; (adverbial) even, also, too
+
+  οὐ (ούκ or οὐχ before vowels):
+    meanings: not (negating statements, words, or phrases)
+    cognates: Utopia

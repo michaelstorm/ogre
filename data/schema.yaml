@@ -1,0 +1,211 @@
+queues:
+  from:
+    - greek_noun
+    - english
+    - declension
+  to:
+    - greek_noun
+    - english
+    - declension
+
+classes:
+  noun:
+    quiz_sets:
+      # - from:
+      #     - greek_noun
+      #     - declension
+      #   to:
+      #     - conjugated_greek
+      #     - english
+      - from:
+          - conjugated_greek
+        to:
+          # - english
+          # - greek_noun
+          - declension
+      # - from:
+      #     - english
+      #     - declension
+      #   to:
+      #     - conjugated_greek
+      #     - greek_noun
+    classes:
+      greek_noun:
+      conjugated_greek:
+        type: literal
+      declension:
+
+  preposition:
+    quiz_sets:
+      - from:
+          - greek
+        to:
+          - case_english_translation
+      - from:
+          - case_english_translation
+        to:
+          - greek
+    classes:
+      greek:
+      case_english_translation:
+        collection_type: set
+
+  declension:
+    classes:
+      gender:
+        type: literal
+      person:
+        type: literal
+      case:
+        type: literal
+      declension_category:
+        type: literal
+
+  case_english_translation:
+    classes:
+      case:
+        type: literal
+      english_translation:
+
+  # the entire translation for a Greek word
+  english_translation:
+    classes:
+      english_group:
+        collection_type: set
+      cognates:
+        collection_type: set
+        determinative: false
+        type: literal
+
+  # group of related English meanings, i.e. something separated by semicolons
+  # in a definition
+  english_group:
+    classes:
+      english:
+        collection_type: set
+
+  # single English meaning, i.e. something separated by commas in a definition
+  english:
+    classes:
+      literal:
+      before_parens:
+        type: literal
+        determinative: false
+      after_parens:
+        type: literal
+        determinative: false
+
+  # catch-all for a Greek string with optional parenthetical note
+  greek:
+    classes:
+      literal:
+      parens:
+        type: literal
+        determinative: false
+      english_translation:
+
+  # Greek parts of the dictionary form of a Greek noun -- i.e., nom. and gen.
+  # forms, with English translation
+  greek_noun:
+    classes:
+      nominative:
+        type: literal
+      genitive:
+        type: literal
+      english_translation:
+      cognates:
+        collection_type: set
+        determinative: false
+        type: literal
+
+definitions:
+  declension:
+    o/f/s/n:
+      gender: f
+      person: s
+      case: n
+      declension_category: o
+
+    o/f/s/g:
+      gender: f
+      person: s
+      case: g
+      declension_category: o
+
+    o/f/s/v:
+      gender: f
+      person: s
+      case: v
+      declension_category: o
+
+  english_translation:
+    ψῆφος:
+      english_group:
+        - english:
+          - literal: small stone
+          - literal: pebble
+            after_parens: used in reckoning, in games, in voting
+        - english:
+          - literal: vote
+      cognates:
+        - psephologist
+
+    # ἀπό:
+    #   english_group:
+    #     - english:
+    #       - literal: away from
+    #       - literal: from
+    #   cognates: [aphelion, apogee, apocalypse]
+
+    # μέτρον:
+    #   english_group:
+    #     - english:
+    #       - literal: sdfsdf
+
+  # greek:
+  #   ἀπό:
+  #     literal: ἀπό
+  #     parens: ἀπ' or ἀφ' before vowels
+  #     english_translation: ἀπό
+
+  greek_noun:
+    ψῆφος:
+      nominative: ψῆφος
+      genitive: ψῆφου
+      english_translation: ψῆφος
+
+    # μέτρον:
+    #   nominative: μέτρον
+    #   genitive: μέτρου
+    #   english_translation: μέτρον
+
+  noun:
+    ψῆφος/f/s/n:
+      greek_noun: ψῆφος
+      conjugated_greek: ψῆφος
+      declension: o/f/s/n
+
+    ψῆφος/f/s/v:
+      greek_noun: ψῆφος
+      conjugated_greek: ψῆφος
+      declension: o/f/s/v
+
+    # ψῆφος/f/s/g:
+    #   greek_noun: ψῆφος
+    #   conjugated_greek: ψῆφου
+    #   declension: o/f/s/g
+
+    # μέτρον/n/s/n:
+    #   greek_noun: μέτρον
+    #   conjugated_greek: μέτρον
+    #   declension: o/f/s/n
+
+    # μέτρον/n/s/n2:
+    #   greek_noun: ψῆφος
+    #   conjugated_greek: μέτρον
+    #   declension: o/f/s/v
+
+    # μέτρον/n/s/n3:
+    #   greek_noun: μέτρον
+    #   conjugated_greek: μέτρομ
+    #   declension: o/f/s/v
