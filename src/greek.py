@@ -92,13 +92,6 @@ def load_paradigm(paradigm):
     return endings_by_case
 
 
-# def load_prepositions(data):
-#     return_data = {}
-#     for greek, preposition_data in data.items():
-#         preposition_return_data = {}
-#         for
-
-
 def load_data(path):
     with open(path, 'r') as f:
         noun_endings_by_paradigm = {}

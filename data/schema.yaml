@@ -183,7 +183,11 @@ definitions:
     ψῆφος/f/s/n:
       greek_noun: ψῆφος
       conjugated_greek: ψῆφος
-      declension: o/f/s/n
+      declension:
+        gender: f
+        person: s
+        case: n
+        declension_category: o
 
     ψῆφος/f/s/v:
       greek_noun: ψῆφος

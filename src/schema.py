@@ -67,7 +67,7 @@ class Definition(CommonEqualityMixin):
 
     def compare(self, other_value):
         for field_name in self.field_defs.keys():
-            if not self.field_defs[field_name].compare(other_value[field_name]):
+            if not other_value or not self.field_defs[field_name].compare(other_value[field_name]):
                 return False
 
         return self.field_defs.keys() == other_value.keys()
