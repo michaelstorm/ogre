@@ -6,7 +6,7 @@ from schema import Class, Definition, Field, FieldDefinition
 def create_classes(classes, schema):
     for class_name, class_data in schema.get('classes', {}).items():
         quiz_sets = class_data.get('quiz_sets', [])
-        class_spec = Class(class_name, quiz_sets=quiz_sets)
+        class_spec = Class(class_name, display_name=class_data.get('display_name'), quiz_sets=quiz_sets)
         classes[class_name] = class_spec
 
     for class_name, class_data in schema.get('classes', {}).items():
@@ -21,7 +21,8 @@ def create_classes(classes, schema):
             collection_type = field_data.get('collection_type', 'scalar')
             determinative = field_data.get('determinative', True)
 
-            field = Field(field_name, class_spec, value_type, collection_type, determinative)
+            field = Field(field_name, class_spec, value_type, collection_type, determinative,
+                          display_name=field_data.get('display_name'))
             class_spec.fields[field_name] = field
 
 
@@ -54,13 +55,13 @@ def create_field_definition_from_str(definitions, definition, field, field_value
         # derefence definition name if it's not a literal
         field_def_value = get_or_create_definition(definitions, field.value_type, field_value)
 
-    return FieldDefinition(field, field_def_value)
+    return FieldDefinition(field, tuple([field_def_value]))
 
 
 def create_field_definition_from_dict(definitions, definition, field, field_value):
     dict_value_name = '{}_{}'.format(definition.name, field.name)
     field_def = populate_definition(field.value_type, definitions, dict_value_name, field_value)
-    return FieldDefinition(field, field_def)
+    return FieldDefinition(field, tuple([field_def]))
 
 
 def create_field_definition_from_set(definitions, definition, field, field_value):
@@ -73,7 +74,7 @@ def create_field_definition_from_set(definitions, definition, field, field_value
 
         return FieldDefinition(field, tuple(list_values))
     else:
-        return FieldDefinition(field, field_value)
+        return FieldDefinition(field, tuple(field_value))
 
 
 def create_field_definition(definitions, definition, field, field_value):

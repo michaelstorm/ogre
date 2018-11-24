@@ -38,8 +38,9 @@ class CommonEqualityMixin(object):
 
 
 class Class(CommonEqualityMixin):
-    def __init__(self, name, quiz_sets=[]):
+    def __init__(self, name, display_name=None, quiz_sets=[]):
         self.name = name
+        self.display_name = display_name
         self.fields = {}
         self.quiz_sets = list(quiz_sets)
 
@@ -55,8 +56,9 @@ class Class(CommonEqualityMixin):
 
 
 class Field(CommonEqualityMixin):
-    def __init__(self, name, class_spec, value_type, collection_type, determinative):
+    def __init__(self, name, class_spec, value_type, collection_type, determinative, display_name=None):
         self.name = name
+        self.display_name = display_name
         self.class_spec = class_spec
         self.value_type = value_type
         self.collection_type = collection_type
@@ -99,28 +101,23 @@ class Definition(CommonEqualityMixin):
 
 # {"person": "s", "gender": "f", "case": "v", "declension_category": "o"}
 class FieldDefinition(CommonEqualityMixin):
-    def __init__(self, field, value):
+    def __init__(self, field, values):
         self.field = field
-        self.value = value
+        self.values = values
 
     def __repr__(self):
-        value = "'{}'".format(self.value) if not self.field.value_type and self.field.collection_type == 'scalar' else self.value
-        return '<FieldDefinition {}={}>'.format(self.field.name, value)
+        return '<FieldDefinition {}={}>'.format(self.field.name, self.values)
 
     def freeze(self):
         if self.field.value_type:
-            if self.field.collection_type == 'set':
-                for list_value in self.value:
-                    list_value.freeze()
-            else:
-                self.value.freeze()
+            for list_value in self.values:
+                list_value.freeze()
 
-        if self.field.collection_type == 'set':
-            self.value = tuple(self.value)
+        self.values = tuple(self.values)
 
     def compare(self, other_value):
         if self.field.collection_type == 'set':
-            for list_value in self.value:
+            for list_value in self.values:
                 found = False
                 for other_list_value in other_value:
                     found = list_value.compare(other_list_value) if self.field.value_type else list_value == other_list_value
@@ -130,12 +127,9 @@ class FieldDefinition(CommonEqualityMixin):
                 if not found:
                     return False
 
-            return len(self.value) == len(other_value)
+            return len(self.values) == len(other_value)
         else:
-            return self.value.compare(other_value) if self.field.value_type else self.value == other_value
-
-    # def __json__(self):
-    #     return {}
+            return self.values.compare(other_value) if self.field.value_type else self.values == other_value
 
 
 def print_classes(classes):

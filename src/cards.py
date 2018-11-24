@@ -1,4 +1,5 @@
 from helpers import is_iterable
+from schema import FieldDefinition
 
 import itertools
 from frozendict import frozendict
@@ -19,20 +20,26 @@ def resolve_value(resolve_field_name, definition, tab=0):
         child_field = child_field_def.field
 
         if child_field.name == resolve_field_name:
+            # print('child_field_def', child_field_def)
             results.add(child_field_def)
         elif child_field.value_type:
-            if child_field.collection_type == 'scalar':
-                child_result = resolve_value(resolve_field_name, child_field_def.value, tab + 1)
-            else:
-                for child_field_list_value in child_field_def.value:
-                    print('\t' * tab, '*', child_field_list_value)
-                    print()
-                    child_result = resolve_value(resolve_field_name, child_field_list_value, tab + 1)
-            results.update(child_result)
+            for child_field_list_value in child_field_def.values:
+                print('\t' * tab, '*', child_field_list_value)
+                print()
+                child_result = resolve_value(resolve_field_name, child_field_list_value, tab + 1)
+                if child_result:
+                    results.add(child_result)
 
-    print('\t' * tab, '> results', results)
+    result = None
+    if len(results) > 0:
+        values = []
+        for set_result in results:
+            values.extend(set_result.values)
+        result = FieldDefinition(list(results)[0].field, tuple(values))
+
+    print('\t' * tab, '> result', result)
     print()
-    return frozenset(results)
+    return result
 
 
 def create_base_cards(classes, definitions):
@@ -50,7 +57,7 @@ def create_base_cards(classes, definitions):
                              for quiz_field_name in quiz_set['from']}
 
                 from_keys = list(from_dict.keys()) # consistent ordering
-                from_values = [list(from_dict[key]) for key in from_keys]
+                from_values = [from_dict[key].values for key in from_keys]
 
                 product = list(itertools.product(*from_values))
                 for combination in product:

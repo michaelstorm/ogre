@@ -32,6 +32,7 @@ classes:
     classes:
       greek_noun:
       conjugated_greek:
+        display_name: 'conjugated Greek'
         type: literal
       declension:
 
@@ -62,6 +63,7 @@ classes:
         type: literal
 
   case_english_translation:
+    display_name: 'Case/English translation'
     classes:
       case:
         type: literal
@@ -69,6 +71,7 @@ classes:
 
   # the entire translation for a Greek word
   english_translation:
+    display_name: 'English translation'
     classes:
       english_group:
         collection_type: set
@@ -80,12 +83,14 @@ classes:
   # group of related English meanings, i.e. something separated by semicolons
   # in a definition
   english_group:
+    display_name: 'English group'
     classes:
       english:
         collection_type: set
 
   # single English meaning, i.e. something separated by commas in a definition
   english:
+    display_name: 'English'
     classes:
       literal:
       before_parens:
@@ -97,6 +102,7 @@ classes:
 
   # catch-all for a Greek string with optional parenthetical note
   greek:
+    display_name: 'Greek'
     classes:
       literal:
       parens:
@@ -107,6 +113,7 @@ classes:
   # Greek parts of the dictionary form of a Greek noun -- i.e., nom. and gen.
   # forms, with English translation
   greek_noun:
+    display_name: 'Greek noun'
     classes:
       nominative:
         type: literal
@@ -180,14 +187,14 @@ definitions:
     #   english_translation: μέτρον
 
   noun:
-    # ψῆφος/f/s/n:
-    #   greek_noun: ψῆφος
-    #   conjugated_greek: ψῆφος
-    #   declension:
-    #     gender: f
-    #     person: s
-    #     case: n
-    #     declension_category: o
+    ψῆφος/f/s/n:
+      greek_noun: ψῆφος
+      conjugated_greek: ψῆφος
+      declension:
+        gender: f
+        person: s
+        case: n
+        declension_category: o
 
     ψῆφος/f/s/v:
       greek_noun: ψῆφος

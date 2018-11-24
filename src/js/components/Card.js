@@ -3,6 +3,7 @@ import _ from 'lodash';
 
 class FromDefinition extends Component {
   render() {
+    // console.log('FromDefinition', this.props);
     const {field_defs} = this.props;
 
     return Object.keys(field_defs).map(key => {
@@ -13,15 +14,14 @@ class FromDefinition extends Component {
 
 class FromFieldDefinition extends Component {
   render() {
-    const {field, value} = this.props;
+    // console.log('FromFieldDefinition', this.props);
+    const {field, values} = this.props;
 
-    const renderedValue = typeof value === "string"
-      ? value
-      : Array.isArray(value)
-        ? value.map((v, index) => {
-            return <FromDefinition key={index} field_defs={v.field_defs} />;
-          })
-        : <FromDefinition field_defs={value.field_defs} />;
+    const renderedValue = values.map((v, index) => {
+      return typeof v === "string"
+        ? v
+        : <FromDefinition key={index} field_defs={v.field_defs} />;
+    });
 
     return (
       <div className="field-definition">
@@ -35,33 +35,40 @@ class FromFieldDefinition extends Component {
 class ToDefinition extends Component {
   onValuesChanged = (field_name, newValues) => {
     const value = Object.assign({}, this.props.value);
-    value[field_name] = newValues;
+    value.field_defs[field_name] = newValues;
     this.props.onValueChanged(value);
   };
 
   render() {
+    // console.log('ToDefinition', this.props);
     const {value} = this.props;
+    const {field_defs} = value;
 
-    return Object.keys(value).map(field_name => {
+    return Object.keys(field_defs).map(field_name => {
       return <ToFieldDefinition key={field_name}
                                 onValuesChanged={newValues => this.onValuesChanged(field_name, newValues)}
-                                {...value[field_name]} />;
+                                onSubmit={this.props.onSubmit}
+                                {...field_defs[field_name]} />;
     });
   }
 };
 
 class ToFieldDefinition extends Component {
   modifyValuesArray = modifyArray => {
+    console.log('modifyValuesArray', this.props);
     const props = Object.assign({}, this.props);
     const values = props.values.slice();
     props.values = modifyArray(values);
+    console.log('new props', props);
     this.props.onValuesChanged(props);
   };
 
   onAddClicked = () => {
     this.modifyValuesArray(values => {
-      const field_definition = visit_to_field_definition(this.props);
-      return values.concat(field_definition.values);
+      console.log('MOD', values);
+      const newValues = visit_to_field_definition(this.props).values;
+      console.log('newValues', newValues);
+      return values.concat(newValues);
     });
   };
 
@@ -77,18 +84,26 @@ class ToFieldDefinition extends Component {
       values[index] = newValue;
       return values;
     });
-  }
+  };
 
   onTextChanged = (index, e) => {
     this.onChanged(index, e.target.value);
   };
 
   onChildValueChanged = (index, childValue) => {
+    console.log('onChildValueChanged', index, childValue);
     this.onChanged(index, childValue);
-  }
+  };
+
+  onKeyDown = e => {
+    if (e.ctrlKey && e.keyCode == 13) {
+      this.props.onSubmit();
+    }
+  };
 
   render() {
-    const {determinative, name, value_type, values} = this.props;
+    // console.log('ToFieldDefinition', this.props);
+    const {field, values} = this.props;
 
     return (
       <div className="field-definition">
@@ -100,12 +115,14 @@ class ToFieldDefinition extends Component {
                 {
                   values.length > 1 && <button className="add" onClick={() => this.onRemoveClicked(index)}>-</button>
                 }
-                <div className="key">{name}</div>
+                <div className="key">{(this.props.display_name || (field.value_type && field.value_type.display_name)) || field.name}</div>
                 <div className="value">
                   {
-                    !value_type
-                      ? <input type="text" value={value} onChange={e => this.onTextChanged(index, e)} />
-                      : <ToDefinition value={value} onValueChanged={childValue => this.onChildValueChanged(index, childValue)} />
+                    !field.value_type_name
+                      ? <input type="text" value={value} onChange={e => this.onTextChanged(index, e)} onKeyDown={this.onKeyDown} />
+                      : <ToDefinition value={value}
+                                      onValueChanged={childValue => this.onChildValueChanged(index, childValue)}
+                                      onSubmit={this.props.onSubmit} />
                   }
                 </div>
               </div>
@@ -117,33 +134,78 @@ class ToFieldDefinition extends Component {
   }
 };
 
-function visit_definition_fields(fields) {
+function visit_definition_fields(values) {
+  // console.log('visit_definition_fields', values);
   const ret = {};
-  Object.keys(fields).forEach(key => {
-    ret[key] = visit_to_field_definition(fields[key]);
+  Object.keys(values).forEach(key => {
+    ret[key] = visit_to_field_definition(values[key]);
   });
   return ret;
 }
 
 function visit_to_field_definition(field_definition) {
+  // console.log('visit_to_field_definition', field_definition);
   field_definition = Object.assign({}, field_definition);
-  field_definition.values = field_definition.value_type ? [visit_definition_fields(field_definition.value_type.fields)] : [''];
+  field_definition.values = field_definition.field.value_type_name ? [Object.assign({}, field_definition.values[0], {field_defs: visit_definition_fields(field_definition.values[0].field_defs)})] : [''];
   return field_definition;
+}
+
+function check_definition_response(answer, response) {
+  console.log('check_definition_response', answer, response);
+  Object.keys(answer).forEach(key => {
+    const answer_field = answer[key];
+    console.log('answer_field', answer_field);
+    const answer_values = answer_field.map(f => f.values);
+
+    const response_field = response[key];
+    console.log('response_field', response_field);
+
+    // console.log(answer_values, response[key]);
+    const max_attempts = answer_values.length;
+
+    // for (let attempts = 0; attempts < max_attempts; attempts++) {
+    //   for (let i = 0; i < answer_values.length; i++) {
+    //     if (typeof answer_values[i] === 'object') {
+    //       if (check_definition_response(answer_values[i].field_defs, response[key])) {
+    //         console.log(answer_values[i].field_defs, response[key], 'equal');
+    //       }
+    //     }
+    //   }
+    // }
+  });
 }
 
 export default class Card extends Component {
   constructor(props) {
     super(props);
 
-    this.state = {responses: visit_definition_fields(props.data.to_fields)};
+    this.state = {responses: [visit_definition_fields(JSON.parse(JSON.stringify(props.data.to[0])))]};
+    console.log('this.state', this.state);
+    // console.log(visit_definition_fields(this.state.responses[0]))
   }
 
-  onResponsesChanged = (name, values) => {
+  onAddClicked = () => {
     this.setState(state => {
-      const responses = Object.assign({}, state.responses);
-      responses[name] = values;
+      const responses = state.responses.slice();
+      responses.push(visit_definition_fields(this.props.data.to_fields));
       return {responses};
     });
+  };
+
+  onResponsesChanged = (index, name, values) => {
+    this.setState(state => {
+      console.log('onResponsesChanged', state, index, name, values);
+      const responses = state.responses.slice();
+      const response = Object.assign({}, responses[index]);
+      response[name] = values;
+      responses[index] = response;
+      return {responses};
+    });
+  };
+
+  onSubmit = () => {
+    // console.log(this.state.responses);
+    check_definition_response(this.props.data.to[0], this.state.responses[0]);
   };
 
   render() {
@@ -155,22 +217,28 @@ export default class Card extends Component {
         <div className="from-fields">
           {
             Object.keys(from_data).map(key => (
-              <FromFieldDefinition key={key} {...from_data[key]} />
+              <div className="field-definition" key={key}>
+                <div className="key">{key}</div>
+                <div className="value"><FromDefinition {...from_data[key]} /></div>
+              </div>
             ))
           }
         </div>
         <div className="to-fields">
           <div className="to-fields-column">
-            <button className="add">+</button>
+            <button className="add" onClick={this.onAddClicked}>+</button>
           </div>
           <div className="to-fields-column">
             {
-              Object.keys(responses).map(field_name => {
-                return (
-                  <ToFieldDefinition key={field_name}
-                                     onValuesChanged={values => this.onResponsesChanged(field_name, values)}
-                                     {...responses[field_name]} />
-                )
+              responses.map((response, i) => {
+                return Object.keys(response).map(field_name => {
+                  return (
+                    <ToFieldDefinition key={`${i}:${field_name}`}
+                                       onValuesChanged={values => this.onResponsesChanged(i, field_name, values)}
+                                       onSubmit={this.onSubmit}
+                                       {...response[field_name]} />
+                  )
+                })
               })
             }
           </div>

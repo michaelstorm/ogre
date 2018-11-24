@@ -23,7 +23,7 @@ print_cards(global_base_cards)
 
 global_cards = get_unique_cards(global_base_cards)
 print('CARDS')
-print_cards(global_base_cards)
+print_cards(global_cards)
 
 
 class MyConfig(object):
@@ -53,6 +53,7 @@ def get_field_types(field):
         if key == 'class_spec':
             j['class_name'] = value.name
         elif key == 'value_type':
+            print(field, value)
             j['value_type'] = get_field_value_type(value) if value else None
         else:
             j[key] = value
@@ -63,8 +64,8 @@ def get_field_types(field):
 class HelloWorld(Resource):
     def get(self):
         cards = []
-        for card in list(global_cards[:1]):
-            card['to_fields'] = {field_name: get_field_types(list(field)[0].field) for field_name, field in list(card['to'])[0].items()}
+        for card in global_cards:
+            card['to_fields'] = {field_name: get_field_types(field) for field_name, field in list(card['to'])[0].items()}
             cards.append(card)
 
         return cards
