@@ -17,18 +17,18 @@ classes:
       #   to:
       #     - conjugated_greek
       #     - english
-      - from:
-          - conjugated_greek
-        to:
-          # - english
-          # - greek_noun
-          - declension
       # - from:
-      #     - english
-      #     - declension
-      #   to:
       #     - conjugated_greek
+      #   to:
+      #     - english
       #     - greek_noun
+      #     - declension
+      - from:
+          - english
+          - declension
+        to:
+          - conjugated_greek
+          - greek_noun
     classes:
       greek_noun:
       conjugated_greek:
@@ -180,14 +180,14 @@ definitions:
     #   english_translation: μέτρον
 
   noun:
-    ψῆφος/f/s/n:
-      greek_noun: ψῆφος
-      conjugated_greek: ψῆφος
-      declension:
-        gender: f
-        person: s
-        case: n
-        declension_category: o
+    # ψῆφος/f/s/n:
+    #   greek_noun: ψῆφος
+    #   conjugated_greek: ψῆφος
+    #   declension:
+    #     gender: f
+    #     person: s
+    #     case: n
+    #     declension_category: o
 
     ψῆφος/f/s/v:
       greek_noun: ψῆφος

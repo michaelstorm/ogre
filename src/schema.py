@@ -1,4 +1,28 @@
 from frozendict import frozendict
+import json
+
+
+class FrozenCollectionEncoder(json.JSONEncoder):
+    def default(self, obj):
+        if isinstance(obj, frozenset) or isinstance(obj, set):
+            return [self.default(x) for x in obj]
+        elif isinstance(obj, frozendict):
+            return {x: self.default(y) for x, y in obj.items()}
+        elif isinstance(obj, Field) or isinstance(obj, Definition):
+            j = {}
+            for key, value in obj.__dict__.items():
+                if key == 'class_spec':
+                    j['class_name'] = value.name
+                elif key == 'value_type':
+                    j['value_type_name'] = value.name if value else None
+                else:
+                    j[key] = value
+
+            return j
+        elif isinstance(obj, FieldDefinition):
+            return obj.__dict__ # not sure why returning __dict__ sidesteps circular reference
+        else:
+            return obj
 
 
 class CommonEqualityMixin(object):
@@ -109,6 +133,9 @@ class FieldDefinition(CommonEqualityMixin):
             return len(self.value) == len(other_value)
         else:
             return self.value.compare(other_value) if self.field.value_type else self.value == other_value
+
+    # def __json__(self):
+    #     return {}
 
 
 def print_classes(classes):

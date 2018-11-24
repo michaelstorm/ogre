@@ -1,15 +1,10 @@
 from collections import defaultdict
 import json
-import yaml
 
 from cards import compare_answer, create_base_cards, get_unique_cards, print_cards
+from helpers import FrozenCollectionEncoder
 from schema import print_classes
-from schema_loader import create_classes, create_definitions_from_schema, freeze_definitions
-
-
-def open_schema_file(path):
-    with open(path) as f:
-        return yaml.load(f)
+from schema_loader import create_classes, create_definitions_from_schema, freeze_definitions, open_schema_file
 
 
 def run_quiz(cards):

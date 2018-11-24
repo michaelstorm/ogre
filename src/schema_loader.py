@@ -1,3 +1,5 @@
+import yaml
+
 from schema import Class, Definition, Field, FieldDefinition
 
 
@@ -119,3 +121,8 @@ def freeze_definitions(definitions):
     for class_definitions in definitions.values():
         for definition in class_definitions.values():
             definition.freeze()
+
+
+def open_schema_file(path):
+    with open(path) as f:
+        return yaml.load(f)
