@@ -309,7 +309,13 @@ export default class Card extends Component {
             Object.keys(from_data).sort().map(key => (
               <div className="field-definition" key={key}>
                 <div className="key">{key}</div>
-                <div className="value"><FromDefinition {...from_data[key]} /></div>
+                <div className="value">
+                  {
+                    typeof from_data[key] === "string"
+                      ? from_data[key]
+                      : <FromDefinition {...from_data[key]} />
+                  }
+                </div>
               </div>
             ))
           }
@@ -320,36 +326,38 @@ export default class Card extends Component {
           </div>
           <div className="to-fields-column">
             {
-              responses.map((response, i) => {
-                return (
-                  Object.keys(response).sort().map(field_name => {
-                    const isCorrect = correct_responses.indexOf(i) > -1;
-                    const isIncorrect = incorrect_responses[i] !== undefined;
-                    return (
-                      <ToFieldDefinition key={`${i}:${field_name}`}
-                                         onValuesChanged={values => this.onResponsesChanged(i, field_name, values)}
-                                         onSubmit={this.onSubmit}
-                                         {...response[field_name]}
-                                         isCorrect={isCorrect}
-                                         isIncorrect={isIncorrect}
-                                         isReadOnly={false} />
-                    )
-                  })
-                )
-              })
+              responses.map((response, i) => (
+                <div className="response" key={i}>
+                  {
+                    Object.keys(response).sort().map(field_name => {
+                      const isCorrect = correct_responses.indexOf(i) > -1;
+                      const isIncorrect = incorrect_responses[i] !== undefined;
+                      return (
+                          <ToFieldDefinition key={`${i}:${field_name}`}
+                                             onValuesChanged={values => this.onResponsesChanged(i, field_name, values)}
+                                             onSubmit={this.onSubmit}
+                                             {...response[field_name]}
+                                             isCorrect={isCorrect}
+                                             isIncorrect={isIncorrect}
+                                             isReadOnly={false} />
+                      )
+                    })
+                  }
+                </div>
+              ))
             }
             {
-              Object.values(remaining_answers).map((response, i) => {
-                return (
-                  Object.keys(response).sort().map(field_name => {
-                    return (
-                      <ToFieldDefinition key={`${i}:${field_name}`}
-                                         {...response[field_name]}
-                                         isReadOnly={true} />
-                    )
-                  })
-                )
-              })
+              Object.values(remaining_answers).map((response, i) => (
+                <div className="response" key={i}>
+                  {
+                    Object.keys(response).sort().map(field_name => (
+                        <ToFieldDefinition key={`${i}:${field_name}`}
+                                           {...response[field_name]}
+                                           isReadOnly={true} />
+                    ))
+                  }
+                </div>
+              ))
             }
           </div>
         </div>

@@ -20,7 +20,6 @@ classes:
       - from:
           - conjugated_greek
         to:
-          - english
           - greek_noun
           - declension
       # - from:
