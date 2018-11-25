@@ -6,21 +6,16 @@ class FrozenCollectionEncoder(json.JSONEncoder):
     def default(self, obj):
         if isinstance(obj, frozenset) or isinstance(obj, set):
             return [self.default(x) for x in obj]
+
         elif isinstance(obj, frozendict):
             return {x: self.default(y) for x, y in obj.items()}
-        elif isinstance(obj, Field) or isinstance(obj, Definition):
-            j = {}
-            for key, value in obj.__dict__.items():
-                if key == 'class_spec':
-                    j['class_name'] = value.name
-                elif key == 'value_type':
-                    j['value_type_name'] = value.name if value else None
-                else:
-                    j[key] = value
 
-            return j
-        elif isinstance(obj, FieldDefinition):
+        elif isinstance(obj, Class):
+            return {key: value for key, value in obj.__dict__.items() if key != 'fields'}
+
+        elif isinstance(obj, FieldDefinition) or isinstance(obj, Field) or isinstance(obj, Definition):
             return obj.__dict__ # not sure why returning __dict__ sidesteps circular reference
+
         else:
             return obj
 
@@ -136,6 +131,7 @@ def print_classes(classes):
     lines = []
     for class_spec in classes.values():
         lines.append('{}:'.format(class_spec.name))
+        lines.append('  display_name: "{}"'.format(class_spec.display_name))
         lines.append('  quiz_sets: {}'.format(class_spec.quiz_sets))
         lines.append('  fields:')
         for field in class_spec.fields.values():
