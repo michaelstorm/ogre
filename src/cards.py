@@ -20,7 +20,7 @@ def resolve_value(resolve_field_name, definition, tab=0):
         child_field = child_field_def.field
 
         if child_field.name == resolve_field_name:
-            # print('child_field_def', child_field_def)
+            print('child_field_def', child_field_def)
             results.add(child_field_def)
         elif child_field.value_type:
             for child_field_list_value in child_field_def.values:

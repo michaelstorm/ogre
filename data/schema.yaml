@@ -17,18 +17,17 @@ classes:
       #   to:
       #     - conjugated_greek
       #     - english
-      # - from:
-      #     - conjugated_greek
-      #   to:
-      #     - english
-      #     - greek_noun
-      #     - declension
       - from:
-          - english
-          - declension
-        to:
           - conjugated_greek
+        to:
+          - english
           - greek_noun
+          - declension
+      # - from:
+      #     - english
+      #     - declension
+      #   to:
+      #     - conjugated_greek
     classes:
       greek_noun:
       conjugated_greek:

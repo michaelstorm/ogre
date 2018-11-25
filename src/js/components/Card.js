@@ -47,6 +47,7 @@ class ToDefinition extends Component {
       <ToFieldDefinition key={field_name}
                          onValuesChanged={newValues => this.onValuesChanged(field_name, newValues)}
                          onSubmit={this.props.onSubmit}
+                         isReadOnly={this.props.isReadOnly}
                          {...field_defs[field_name]} />
     ));
   }
@@ -103,11 +104,17 @@ class ToFieldDefinition extends Component {
       return null;
     }
 
+    const className = this.props.isCorrect
+      ? "correct"
+      : this.props.isIncorrect
+        ? "incorrect"
+        : null;
+
     return (
       <div className="field-definition">
         {
           values.map((value, index) => (
-            <div key={index}>
+            <div key={index} className={className}>
               {index === 0 && <button className="add" onClick={this.onAddClicked}>+</button>}
               {values.length > 1 && <button className="add" onClick={() => this.onRemoveClicked(index)}>-</button>}
 
@@ -116,11 +123,14 @@ class ToFieldDefinition extends Component {
               </div>
               <div className="value">
                 {
-                  !field.value_type
-                    ? <input type="text" value={value} onChange={e => this.onTextChanged(index, e)} onKeyDown={this.onKeyDown} />
-                    : <ToDefinition value={value}
+                  field.value_type
+                    ? <ToDefinition value={value}
                                     onValueChanged={childValue => this.onChildValueChanged(index, childValue)}
-                                    onSubmit={this.props.onSubmit} />
+                                    onSubmit={this.props.onSubmit}
+                                    isReadOnly={this.props.isReadOnly} />
+                    : this.props.isReadOnly
+                      ? <span>{value}</span>
+                      : <input type="text" value={value} onChange={e => this.onTextChanged(index, e)} onKeyDown={this.onKeyDown} />
                 }
               </div>
             </div>
@@ -141,9 +151,8 @@ function visit_definition_fields(values) {
 
 function visit_to_field_definition(field_definition) {
   field_definition = JSON.parse(JSON.stringify(field_definition));
-  field_definition.expected_values = field_definition.values;
-
   const {value_type} = field_definition.field;
+
   if (value_type) {
     const first_value = field_definition.values[0];
     const field_defs = visit_definition_fields(first_value.field_defs);
@@ -156,23 +165,97 @@ function visit_to_field_definition(field_definition) {
   return field_definition;
 }
 
-function check_def(answer, response) {
-  console.log('check_def', answer, response);
+function compare_values(answer_value, response_value) {
+  console.log('compare_values', answer_value, response_value);
+  if (typeof answer_value === "string") {
+    console.log('string equals:', answer_value === response_value);
+    return answer_value.trim() === response_value.trim();
+  }
+  else {
+    const answer_fields = {};
+    Object.keys(answer_value.field_defs).forEach(field_name => {
+      const answer_field = answer_value.field_defs[field_name];
+      if (answer_field.field.determinative) {
+        answer_fields[field_name] = answer_field;
+      }
+    });
+
+    const response_fields = {};
+    Object.keys(response_value.field_defs).forEach(field_name => {
+      const response_field = response_value.field_defs[field_name];
+      if (response_field.field.determinative) {
+        response_fields[field_name] = response_field;
+      }
+    });
+    console.log('fields', answer_fields, response_fields);
+
+    if (JSON.stringify(Object.keys(answer_fields).sort()) !== JSON.stringify(Object.keys(response_fields).sort())) {
+      return false;
+    }
+    else {
+      return Object.keys(answer_fields).every(field_name => {
+        const answer_field = answer_fields[field_name];
+        const response_field = response_fields[field_name];
+
+        if (answer_field.field.determinative) {
+          return check_def(answer_field.values, response_field.values);
+        }
+        else {
+          return true;
+        }
+      });
+    }
+  }
+}
+
+function check_def(answer_values, response_values) {
+  console.log('check_def', answer_values, response_values);
+  const result = answer_values.every(answer_value => {
+    const r = response_values.find(response_value => compare_values(answer_value, response_value)) !== undefined;
+    if (!r) {
+      console.log("couldn't match", answer_value, "against", response_values);
+    }
+    return r;
+  });
+  console.log('check_def result', answer_values, response_values, result);
+  return result;
 }
 
 function check_definition_response(answer, response) {
-  return Object.keys(answer).map(key => {
+  return Object.keys(answer).every(key => {
     const answer_field = answer[key];
     const answer_values = answer_field.values;
-    console.log('answer_values', answer_values);
 
     const response_field = response[key];
     const response_values = response_field.values;
-    console.log('response_values', response_values);
 
-    const max_attempts = answer_values.length;
     return check_def(answer_values, response_values);
   });
+}
+
+function check_definition_responses(answers, responses) {
+  const correct_responses = [];
+
+  const remaining_answers = {};
+  answers.forEach((answer, index) => {
+    remaining_answers[index] = answer;
+  });
+
+  const remaining_responses = {};
+  responses.forEach((response, index) => {
+    remaining_responses[index] = response;
+  });
+
+  responses.forEach((response, responseIndex) => {
+    const found_answer_index = answers.findIndex(answer => check_definition_response(answer, response));
+    if (found_answer_index > -1) {
+      correct_responses.push(found_answer_index);
+      delete remaining_answers[found_answer_index];
+      delete remaining_responses[responseIndex];
+    }
+  });
+
+  return {correct_responses, remaining_answers, remaining_responses};
 }
 
 export default class Card extends Component {
@@ -180,11 +263,13 @@ export default class Card extends Component {
     super(props);
 
     const initial_response = visit_definition_fields(JSON.parse(JSON.stringify(props.data.to[0])));
-    this.state = {responses: [initial_response]};
+    this.state = {responses: [initial_response], correct_responses: [], incorrect_responses: {}, remaining_answers: {}};
   }
 
   componentDidMount() {
-    document.querySelector('input[type="text"]').focus();
+    setTimeout(() => {
+      document.querySelector('input[type="text"]').focus();
+    }, 100);
   }
 
   onAddClicked = () => {
@@ -207,14 +292,15 @@ export default class Card extends Component {
   };
 
   onSubmit = () => {
-    check_definition_response(this.props.data.to[0], this.state.responses[0]);
+    const {correct_responses, remaining_answers, remaining_responses} = check_definition_responses(this.props.data.to, this.state.responses);
+    this.setState({correct_responses, incorrect_responses: remaining_responses, remaining_answers});
   };
 
   render() {
     console.log('this.state', this.state);
 
     const from_data = this.props.data.from;
-    const {responses} = this.state;
+    const {correct_responses, incorrect_responses, remaining_answers, responses} = this.state;
 
     return (
       <div className="card">
@@ -234,14 +320,36 @@ export default class Card extends Component {
           </div>
           <div className="to-fields-column">
             {
-              responses.map((response, i) => (
-                Object.keys(response).sort().map(field_name => (
-                    <ToFieldDefinition key={`${i}:${field_name}`}
-                                       onValuesChanged={values => this.onResponsesChanged(i, field_name, values)}
-                                       onSubmit={this.onSubmit}
-                                       {...response[field_name]} />
-                ))
-              ))
+              responses.map((response, i) => {
+                return (
+                  Object.keys(response).sort().map(field_name => {
+                    const isCorrect = correct_responses.indexOf(i) > -1;
+                    const isIncorrect = incorrect_responses[i] !== undefined;
+                    return (
+                      <ToFieldDefinition key={`${i}:${field_name}`}
+                                         onValuesChanged={values => this.onResponsesChanged(i, field_name, values)}
+                                         onSubmit={this.onSubmit}
+                                         {...response[field_name]}
+                                         isCorrect={isCorrect}
+                                         isIncorrect={isIncorrect}
+                                         isReadOnly={false} />
+                    )
+                  })
+                )
+              })
+            }
+            {
+              Object.values(remaining_answers).map((response, i) => {
+                return (
+                  Object.keys(response).sort().map(field_name => {
+                    return (
+                      <ToFieldDefinition key={`${i}:${field_name}`}
+                                         {...response[field_name]}
+                                         isReadOnly={true} />
+                    )
+                  })
+                )
+              })
             }
           </div>
         </div>
