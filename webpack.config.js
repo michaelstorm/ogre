@@ -3,7 +3,7 @@ const ExtractTextPlugin = require('extract-text-webpack-plugin');
 
 module.exports = {
   entry: {
-    script: "./src/js/main.js",
+    script: "./src/js/main.tsx",
     styles: "./src/styles/main.sass"
   },
   output: {
@@ -14,6 +14,11 @@ module.exports = {
   devtool: "source-map",
   module: {
     rules: [
+      {
+        test: /\.tsx?$/,
+        exclude: /(node_modules|bower_components)/,
+        loader: 'awesome-typescript-loader'
+      },
       {
         test: /\.jsx?$/,
         exclude: /(node_modules|bower_components)/,
@@ -34,7 +39,10 @@ module.exports = {
       }
     ]
   },
-  plugins: [ 
+  resolve: {
+    extensions: ['.ts', '.tsx', '.js', '.jsx', '.json']
+  },
+  plugins: [
     new ExtractTextPlugin({
       filename: '[name].css',
       allChunks: true

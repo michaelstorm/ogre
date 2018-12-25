@@ -33,11 +33,12 @@ class CommonEqualityMixin(object):
 
 
 class Class(CommonEqualityMixin):
-    def __init__(self, name, display_name=None, quiz_sets=[]):
+    def __init__(self, name, display_name=None, quiz_sets=[], response_parser=None):
         self.name = name
         self.display_name = display_name
         self.fields = {}
         self.quiz_sets = list(quiz_sets)
+        self.response_parser = response_parser
 
     def __repr__(self):
         return '<Class {}>'.format(self.name)

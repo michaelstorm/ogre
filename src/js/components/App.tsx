@@ -1,7 +1,7 @@
-import React, { Component } from 'react';
+import * as React from 'react';
 import Card from './Card';
 
-export default class App extends Component {
+export default class App extends React.Component<any, any> {
   constructor(props) {
     super(props);
     this.state = {cards: []};

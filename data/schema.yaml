@@ -70,6 +70,7 @@ classes:
   # the entire translation for a Greek word
   english_translation:
     display_name: 'English translation'
+    response_parser: definition
     classes:
       english_group:
         collection_type: set

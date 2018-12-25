@@ -6,7 +6,8 @@ from schema import Class, Definition, Field, FieldDefinition
 def create_classes(classes, schema):
     for class_name, class_data in schema.get('classes', {}).items():
         quiz_sets = class_data.get('quiz_sets', [])
-        class_spec = Class(class_name, display_name=class_data.get('display_name'), quiz_sets=quiz_sets)
+        class_spec = Class(class_name, display_name=class_data.get('display_name'), quiz_sets=quiz_sets,
+                           response_parser=class_data.get('response_parser'))
         classes[class_name] = class_spec
 
     for class_name, class_data in schema.get('classes', {}).items():
