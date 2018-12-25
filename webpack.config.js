@@ -1,6 +1,10 @@
 const path = require('path');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
 
+// required for errors to appear in --watch mode (see
+// https://github.com/s-panferov/awesome-typescript-loader#configuration)
+const { CheckerPlugin } = require('awesome-typescript-loader');
+
 module.exports = {
   entry: {
     script: "./src/js/main.tsx",
@@ -43,6 +47,7 @@ module.exports = {
     extensions: ['.ts', '.tsx', '.js', '.jsx', '.json']
   },
   plugins: [
+    new CheckerPlugin(),
     new ExtractTextPlugin({
       filename: '[name].css',
       allChunks: true

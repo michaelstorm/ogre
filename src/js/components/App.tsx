@@ -1,15 +1,20 @@
 import * as React from 'react';
 import Card from './Card';
+import {CardProps} from './interfaces';
 
-export default class App extends React.Component<any, any> {
-  constructor(props) {
+interface AppState {
+  cards: Array<CardProps>
+}
+
+export default class App extends React.Component<{}, AppState> {
+  constructor(props: {}) {
     super(props);
     this.state = {cards: []};
   }
 
   componentDidMount() {
     fetch('/api/cards').then(response => {
-      response.json().then(cards => {
+      response.json().then((cards: Array<CardProps>) => {
         this.setState({cards});
       });
     });
@@ -18,7 +23,7 @@ export default class App extends React.Component<any, any> {
   render() {
     return (
       <div className="app">
-        {this.state.cards.length && <Card data={this.state.cards[0]} />}
+        {this.state.cards.length && <Card {...this.state.cards[0]} />}
       </div>
     );
   }
